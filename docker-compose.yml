@@ -167,6 +167,41 @@ services:
       - internal
       - db
 
+  identity_assessment:  
+    # The development Identity assessment 
+    build:
+      context: ./identity_assessment/.
+    container_name: identity_assessment
+    hostname: identity_assessment
+    restart: always
+    depends_on:
+      scan_tls:
+        condition: service_healthy
+      postgres:
+        # Added this just as a precaution considering our planned dependancy
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f https://localhost:8008/readiness || exit 1"]
+      timeout: 1s
+      interval: 1s
+      retries: 5
+    environment:
+      POSTGRES_HOST: ${PG1_HOST}
+      POSTGRES_PORT: ${PG1_PORT}
+      POSTGRES_DB: ${PG1_DB}
+      POSTGRES_USER: ${PG1_USER}
+      POSTGRES_PASSWORD: ${PG1_PASS}
+      SERVER_NAME: ${SERVER_NAME}
+    volumes:
+      - ./results:/results
+      - ./logs:/logs
+      - ./identity_assessment/scripts/identity_assessment:/usr/local/bin/indentity_assessment
+      - ./identity_assessment/scripts/import_scan:/usr/local/bin/import_scan
+      - ./identity_assessment/config:/identity_assessment/config
+    networks:
+      - internal
+      - db
+
 networks:
   proxy:
   db:

@@ -73,16 +73,6 @@ WORKDIR /tools
 
 # Download Go packages
 RUN GOARCH=${TARGETARCH} go install github.com/tomnomnom/anew@latest
-RUN GOARCH=${TARGETARCH} go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest 
-RUN GOARCH=${TARGETARCH} go install github.com/owasp-amass/amass/v3/...@master
-RUN GOARCH=${TARGETARCH} go install github.com/projectdiscovery/httpx/cmd/httpx@latest
-
-#Add configs
-RUN mkdir /root/.config
-COPY config/* /root/.config/
-
-RUN echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq
-COPY config/dnsmasq.conf /etc/dnsmasq.conf 
 
 COPY scripts/* /usr/local/bin/
 RUN chmod +x /usr/local/bin/* \
